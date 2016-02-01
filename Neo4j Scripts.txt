@@ -1,0 +1,41 @@
+CREATE (Pleven:City{name:"Pleven"}) , (Mezdra:City{name:"Mezdra"}) , (Vraca:City{name:"Vraca"}) , 
+(Kneja:City{name:"Kneja"}), (Borovan:City{name:"Borovan"}) , (Lukovit:City{name:"Lukovit"}) ,
+ (Botevgrad:City{name:"Botevgrad"}) , (PolskiTrambesh:City{name:"Polski Trambesh"}) , 
+(VelikoTarnovo:City{name:"Veliko Tranovo"}) , (Lovech:City{name:"Lovech"}) , 
+(Pleven)-[:Distance{km:47}]->(Kneja) , (Kneja)-[:Distance{km:29}]->(Borovan) ,
+ (Borovan)-[:Distance{km:32}]->(Vraca) , (Vraca)-[:Distance{km:17}]->(Mezdra) , 
+(Mezdra)-[:Distance{km:36}]->(Botevgrad) , (Botevgrad)-[:Distance{km:56}]->(Lukovit) ,
+ (Lukovit)-[:Distance{km:51}]->(Pleven) ,(Pleven)-[:Distance{km:92}]->(PolskiTrambesh) ,
+(Pleven)-[:Distance{km:30}]->(Lovech) , (Lovech)-[:Distance{km:35}]->(VelikoTarnovo) , 
+(VelikoTarnovo)-[:Distance{km:38}]->(PolskiTrambesh) , (Kneja)-[:Distance{km:47}]->(Pleven) , 
+(Borovan)-[:Distance{km:29}]->(Kneja) , (Vraca)-[:Distance{km:32}]->(Borovan) , 
+(Mezdra)-[:Distance{km:17}]->(Vraca) , (Botevgrad)-[:Distance{km:36}]->(Mezdra) ,
+ (Lukovit)-[:Distance{km:56}]->(Botevgrad) , (Pleven)-[:Distance{km:51}]->(Lukovit) ,
+(PolskiTrambesh)-[:Distance{km:92}]->(Pleven) ,(Lovech)-[:Distance{km:30}]->(Pleven) , 
+(VelikoTarnovo)-[:Distance{km:35}]->(Lovech) , (PolskiTrambesh)-[:Distance{km:38}]->(VelikoTarnovo)
+
+
+
+  var query1 = client.Cypher
+                .Match("p=(a:City{name:{from}})-[*]->(b:City{name:{to}})")
+                .WithParam("from",from)
+                .WithParam("to",to)
+                .Return((p) => new PathsResult<City>{
+                    nodes = Return.As<IEnumerable<Node<City>>>("p AS shortestPath,reduce(km = 0, r in relationships(p) | km + r.km)"),
+
+                })
+                .Limit(1);
+
+
+            var result = query1.Results;
+
+
+           /* query1.Results.ToList().ForEach(x => Console.WriteLine(x));*/
+MATCH  p=(a:City{name:"Pleven"})-[*]->(b:City{name:"Mezdra"})
+RETURN p AS shortestPath, 
+       reduce(km=0, r in relationships(p) | km+r.km) AS totalDistance
+       ORDER BY totalDistance ASC
+       LIMIT 1
+
+CypherQuery query1 = new CypherQuery("MATCH  p=(a:City{name:'"+from+"'})-[*]->(b:City{name:'"+to+"'}) RETURN p AS shortestPath, reduce(km = 0, r in relationships(p) | km + r.km) AS totalDistance ORDER BY totalDistance ASC LIMIT 1", new Dictionary<string,object>(), CypherResultMode.Set);
+            var paths = ((IRawGraphClient)client).ExecuteGetCypherResults<List<string>>(query1);
