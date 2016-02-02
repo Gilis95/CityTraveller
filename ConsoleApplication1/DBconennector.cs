@@ -40,19 +40,27 @@ namespace ConsoleApplication1
                        .Match("p=(a:City{name:{from}})-[*]->(b:City{name:{to}})")
                        .WithParam("from", from)
                        .WithParam("to", to)
-                       .Return((p) => new PathsResult<City>
+                       .Return((p,order) => new
                        {
-                           nodes = Return.As<IEnumerable<Node<City>>>("p AS shortestPath,reduce(km = 0, r in relationships(p) | km + r.km)"),
+                           shortestPath = Return.As<City>("p"),
+                           order= Return.As<int>("reduce(km = 0, r in relationships(p) | km + r.km)")
 
-                       })
+
+                       }).OrderBy("order ASC")
                        .Limit(1);
 
             var result = query.Results;
 
+            foreach(var res in result) {
+                Console.WriteLine(res.order);
+            }
+
+           /* 
             //var 2
 
             CypherQuery query1 = new CypherQuery("MATCH  p=(a:City{name:'" + from + "'})-[*]->(b:City{name:'" + to + "'}) RETURN p AS shortestPath, reduce(km = 0, r in relationships(p) | km + r.km) AS totalDistance ORDER BY totalDistance ASC LIMIT 1", new Dictionary<string, object>(), CypherResultMode.Set);
             var paths = ((IRawGraphClient)client).ExecuteGetCypherResults<List<string>>(query1);
+            */    
         }
 
 
