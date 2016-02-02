@@ -1,4 +1,4 @@
-﻿using Neo4jClient;
+using Neo4jClient;
 using Neo4jClient.Cypher;
 using System;
 using System.Collections.Generic;
@@ -62,13 +62,14 @@ namespace ConsoleApplication1
 
                     if (res == 1)
                     {
-                        Console.WriteLine("Fastest way:");
-                        db.FindPathBetweenTwoTowns(from, to);
+                        
+                        if(db.FindPathBetweenTwoTowns(from, to)==false)
+                            break;
                     }
                     else if (res == 2)
                     {
-                        Console.WriteLine("Easiest Way");
-                        db.FindEasiestPath(from, to);
+                        if(db.FindEasiestPath(from, to)== false)
+                            break;
                     }
 
                 }
