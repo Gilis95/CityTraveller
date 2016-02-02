@@ -1,4 +1,4 @@
-﻿using Neo4jClient;
+using Neo4jClient;
 using Neo4jClient.Cypher;
 using System;
 using System.Collections.Generic;
@@ -64,11 +64,11 @@ namespace ConsoleApplication1
                                                 }
 
 
-        public void FindPathBetweenTwoTowns(string from, string to)
+        public bool FindPathBetweenTwoTowns(string from, string to)
         {
             if (!this.CheckMarcherute(from,to)) {
                 Console.WriteLine("No such city");
-                return;
+                return false;
             }
             /*MATCH  p=(a:City{name:"Pleven"})-[*]->(b:City{name:"Mezdra"})
             RETURN p AS shortestPath,
@@ -91,13 +91,15 @@ namespace ConsoleApplication1
                        .Limit(1);
 
             var result = query.Results;
-
+            Console.WriteLine("Fastest Line:");
             foreach (var res in result) {
                 foreach (var city in res.shortestPath.ToList()) {
                     Console.WriteLine(city.Data.name);
                 };
 
             }
+
+            return true;
             
 
            /* 
@@ -109,14 +111,16 @@ namespace ConsoleApplication1
         }
 
 
-        public void FindEasiestPath(String from, String to) {
+        public bool FindEasiestPath(String from, String to) {
             //Match p=shortestPath((a:City{name:"Pleven"})-[*]->(b:City{name:"Mezdra"})) Return p
 
             if (!this.CheckMarcherute(from, to))
             {
                 Console.WriteLine("No such city");
-                return;
+                return false;
             }
+
+            
 
             var query = client.Cypher.Match("p=shortestPath((a:City{name:{from}})-[*]->(b:City{name:{to}}))")
                                    .WithParam("from", from)
@@ -125,7 +129,7 @@ namespace ConsoleApplication1
                                    {
                                        name = Return.As<IEnumerable<Node<City>>>("nodes(p)")
                                    });
-
+            Console.WriteLine("Easiest Line:");
             foreach (var res in query.Results)
             {
                 foreach (var city in res.name.ToList())
@@ -135,6 +139,7 @@ namespace ConsoleApplication1
 
             }
 
+            return true;
 
         }
 
