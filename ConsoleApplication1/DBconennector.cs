@@ -144,7 +144,7 @@ namespace ConsoleApplication1
         }
 
 
-        public Boolean CheckMarcherute(string from,string to) {
+        public bool CheckMarcherute(string from,string to) {
             return (cities.Contains(from) ? ((cities.Contains(to))? true : false) : false);
         }
 
