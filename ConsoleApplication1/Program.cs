@@ -21,18 +21,61 @@ namespace ConsoleApplication1
             string from;
             string to;
 
+            int res=0;
+
             Console.WriteLine("Choose marcherute: ");
 
             db.PrintCityList();
+            do
+            {
+                Console.Write("Choose the town where you beggin: ");
+                from = Console.ReadLine();
+                Console.Write("Choose the town where you are going to: ");
+                to = Console.ReadLine();
 
-            Console.Write("Choose the town where you beggin: ");
-            from = Console.ReadLine();
-            Console.Write("Choose the town where you are going to: ");
-            to = Console.ReadLine();
+                string LineReaded;
+                
+                do
+                {
+                    bool isDigit = true;
+                    do
+                    {
+                        Console.WriteLine("Choose Between properties(1,2 or 3): \n 1.Fastest way \n 2.Easiest way \n 3.New Marcherute");
 
-            db.FindPathBetweenTwoTowns(from, to);
+                        LineReaded = Console.ReadLine();
+                        foreach (char c in LineReaded.ToCharArray())
+                        {
+                            if (!Char.IsDigit(c))
+                            {
+                                isDigit = false;
+                                break;
+                            }
+                        }
+                        if (isDigit == true)
+                        {
+                            res = Convert.ToInt32(LineReaded);                            
+                            if (res != 1 && res != 2 && res != 3)
+                                isDigit = false;
+                        }
+                    } while (!(isDigit == true));
 
-            Console.Read();
+
+                    if (res == 1)
+                    {
+                        Console.WriteLine("Fastest way:");
+                        db.FindPathBetweenTwoTowns(from, to);
+                    }
+                    else if (res == 2)
+                    {
+                        Console.WriteLine("Easiest Way");
+                        db.FindEasiestPath(from, to);
+                    }
+
+                }
+                while (res != 3);
+
+            } while (true);
+
         }
     }
 }
